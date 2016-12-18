@@ -1,40 +1,30 @@
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public class MinHeap {
 
-    private int[] Heap;
-    private int size;
-    private int maxsize;
+    private int[] heap;
+    private int lastPos;
+    private int maxSize;
+    private int deadSpace;
+    private ArrayList<Integer> runLengths;
 
     private static final int FRONT = 1;
-
-    public static void main(String args[]) {
-
-        System.out.println("The Min MinHeap is ");
-        MinHeap minHeap = new MinHeap(15);
-        minHeap.insert(9);
-        minHeap.insert(5);
-        minHeap.insert(3);
-        minHeap.insert(7);
-        minHeap.insert(6);
-        minHeap.insert(2);
-        minHeap.insert(4);
-        minHeap.insert(8);
-        minHeap.insert(1);
-        minHeap.minHeap();
-
-        minHeap.print();
-        System.out.println("The Min val is " + minHeap.remove());
-
-    }
+    private int runLength;
 
     /**
+     * Constructor initializes heap with maxSize, sets lastPos to
      *
-     * @param maxsize
+     * @param maxSize maximum size of the heap
      */
-    public MinHeap(int maxsize) {
-        this.maxsize = maxsize;
-        this.size = 0;
-        Heap = new int[this.maxsize + 1];
-        Heap[0] = Integer.MIN_VALUE;
+    public MinHeap(int maxSize) {
+        this.maxSize = maxSize;
+        lastPos = 0;
+        deadSpace = 0;
+        runLength = 0;
+        runLengths = new ArrayList<>();
+        heap = new int[this.maxSize + 1];
+        heap[0] = Integer.MIN_VALUE;
     }
 
     private int parent(int pos) {
@@ -50,48 +40,63 @@ public class MinHeap {
     }
 
     /**
-     *
+     * Prints the parents and children
      */
     public void print() {
-        for (int i = 1; i <= size / 2; i++) {
-            System.out.print(" PARENT : " + Heap[i] + " LEFT CHILD : " + Heap[2 * i]
-                    + " RIGHT CHILD :" + Heap[2 * i + 1]);
-            System.out.println();
+//        for (int i = 1; i <= lastPos / 2; i++) {
+//
+//            int parent = heap[i];
+//            int left = heap[2 * i];
+//            int right = heap[2 * i + 1];
+//
+//            System.out.print(" PARENT : " + parent + " LEFT CHILD : " + left
+//                    + " RIGHT CHILD :" + right);
+//            System.out.println();
+//        }
+        System.out.println(Arrays.toString(heap));
+        System.out.println("Dead space: " + deadSpace);
+        System.out.println("Last position: " + lastPos);
+        if (!spaceAvailable()) {
+            System.out.println("heap is full");
         }
+        System.out.println();
     }
 
     /**
      * Checks the heap at a specific position and determines whether it is a leaf or not
+     *
      * @param pos the position in the heap which should be checked
-     * @return a boolean pertaining to whether it is a leaf
+     * @return boolean pertaining to whether it is a leaf
      */
     private boolean isLeaf(int pos) {
-        if (pos >= (size / 2) && pos <= size) {
+        if (pos >= (lastPos / 2) && pos <= lastPos) {
             return true;
         }
         return false;
     }
 
     /**
+     * Swaps two nodes
      *
-     * @param fpos
-     * @param spos
+     * @param fPos the first position
+     * @param sPos the second position
      */
-    private void swap(int fpos, int spos) {
+    private void swap(int fPos, int sPos) {
         int tmp;
-        tmp = Heap[fpos];
-        Heap[fpos] = Heap[spos];
-        Heap[spos] = tmp;
+        tmp = heap[fPos];
+        heap[fPos] = heap[sPos];
+        heap[sPos] = tmp;
     }
 
     /**
+     * Sorts the heap from a position
      *
-     * @param pos
+     * @param pos the position to apply the percolation to
      */
     private void percolateUp(int pos) {
         if (!isLeaf(pos)) {
-            if (Heap[pos] > Heap[leftChild(pos)] || Heap[pos] > Heap[rightChild(pos)]) {
-                if (Heap[leftChild(pos)] < Heap[rightChild(pos)]) {
+            if (heap[pos] > heap[leftChild(pos)] || heap[pos] > heap[rightChild(pos)]) {
+                if (heap[leftChild(pos)] < heap[rightChild(pos)]) {
                     swap(pos, leftChild(pos));
                     percolateUp(leftChild(pos));
                 } else {
@@ -103,57 +108,111 @@ public class MinHeap {
     }
 
     /**
+     * Inserts an element at the last position of the heap (!then applies percolate up to move the node to the correct position)
      *
-     * @param element
+     * @param element the element to be inserted
      */
     public void insert(int element) {
-        Heap[++size] = element;
-        int current = size;
-
-        while (Heap[current] < Heap[parent(current)]) {
+        if (spaceAvailable()) {
+            heap[++lastPos] = element;
+            System.out.println("insert = " + element);
+        } else {
+            System.err.println("error inserting element " + element + ", heap full");
+        }
+        int current = lastPos;
+        while (heap[current] < heap[parent(current)]) {
             swap(current, parent(current));
             current = parent(current);
         }
     }
 
-    /**
-     *
-     * @param ar
-     */
-    void insertionSort(int[] ar) {
-        for (int i = 1; i < ar.length; i++) {
-            int index = ar[i];
-            int j = i;
-            while (j > 0 && ar[j - 1] > index) {
-                ar[j] = ar[j - 1];
-                j--;
-            }
-            ar[j] = index;
+    public void insertDead(int element) {
+        if (spaceAvailable()) {
+            heap[maxSize - deadSpace] = element;
+            deadSpace++;
+            System.out.println("insert dead = " + element);
+
+        } else {
+            System.err.println("error inserting dead element " + element + ", heap full");
         }
     }
 
+    private void testAndFixDeadSpace() {
+        if (deadSpaceFull()) {
+            runLengths.add(runLength + 1);
+            runLength = 0;
+            deadSpace = 0;
+            percolateUp();
+            System.out.println("end of run");
+        }
+    }
+
+//    /**
+//     *
+//     * @param ar
+//     */
+//    void insertionSort(int[] ar) {
+//        for (int i = 1; i < ar.length; i++) {
+//            int index = ar[i];
+//            int j = i;
+//            while (j > 0 && ar[j - 1] > index) {
+//                ar[j] = ar[j - 1];
+//                j--;
+//            }
+//            ar[j] = index;
+//        }
+//    }
+
     /**
-     *
+     * Sorts the whole heap
      */
-    public void minHeap() {
-        for (int pos = (size / 2); pos >= 1; pos--) {
+    public void percolateUp() {
+        for (int pos = (lastPos / 2); pos >= 1; pos--) {
             percolateUp(pos);
         }
     }
 
     /**
+     * Pops the top element and sorts the tree
      *
-     * @return
+     * @return top element
      */
-    public int remove() {
-        int popped = Heap[FRONT];
-        Heap[FRONT] = Heap[size--];
+    public int pop() {
+
+        testAndFixDeadSpace ();
+
+        int popped = heap[FRONT];
+        heap[FRONT] = heap[lastPos--];
         percolateUp(FRONT);
+        runLength++;
+        System.out.println("pop = " + popped);
+
         return popped;
     }
 
     /**
+     * Gets the top element of the heap
      *
+     * @return top element
+     */
+    public int getTop() {
+        return heap[FRONT];
+    }
+
+    /**
+     * Checks if space is available in the array to put elements in
+     *
+     * @return boolean whether space is available
+     */
+    private boolean spaceAvailable() {
+        return lastPos + deadSpace < maxSize;
+    }
+
+    private boolean deadSpaceFull() {
+        return deadSpace == maxSize;
+    }
+
+    /**
      * @param list
      * @return
      */
@@ -169,7 +228,6 @@ public class MinHeap {
     }
 
     /**
-     *
      * @param list
      * @param runCount
      * @return
