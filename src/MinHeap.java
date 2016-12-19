@@ -56,6 +56,14 @@ public class MinHeap {
         System.out.println(Arrays.toString(heap));
         System.out.println("Dead space: " + deadSpace);
         System.out.println("Last position: " + lastPos);
+        switch (maxSize - (lastPos + deadSpace)){
+            case 0:
+                System.out.println("Empty: 0");
+                break;
+            default:
+                System.out.println("Empty: " + (maxSize - (lastPos + deadSpace)) + " from [" + (lastPos + 1) + "]");
+                break;
+        }
         if (!spaceAvailable()) {
             System.out.println("heap is full");
         }
@@ -117,7 +125,7 @@ public class MinHeap {
             heap[++lastPos] = element;
             System.out.println("insert = " + element);
         } else {
-            System.err.println("error inserting element " + element + ", heap full");
+            System.out.println("- error inserting element " + element + ", heap full");
         }
         int current = lastPos;
         while (heap[current] < heap[parent(current)]) {
@@ -130,11 +138,11 @@ public class MinHeap {
         if (spaceAvailable()) {
             heap[maxSize - deadSpace] = element;
             deadSpace++;
-            System.out.println("insert dead = " + element);
-
+            System.out.println("dead insert = " + element);
         } else {
-            System.err.println("error inserting dead element " + element + ", heap full");
+            System.out.println("- error inserting dead element " + element + ", heap full");
         }
+        testAndFixDeadSpace();
     }
 
     private void testAndFixDeadSpace() {
@@ -142,8 +150,9 @@ public class MinHeap {
             runLengths.add(runLength + 1);
             runLength = 0;
             deadSpace = 0;
+            lastPos = maxSize;
             percolateUp();
-            System.out.println("end of run");
+            System.out.println("**end of run");
         }
     }
 
@@ -182,10 +191,13 @@ public class MinHeap {
         testAndFixDeadSpace ();
 
         int popped = heap[FRONT];
-        heap[FRONT] = heap[lastPos--];
-        percolateUp(FRONT);
-        runLength++;
-        System.out.println("pop = " + popped);
+
+        if ((lastPos -1) >= 0) {
+            heap[FRONT] = heap[lastPos--];
+            percolateUp(FRONT);
+            runLength++;
+            System.out.println("pop = " + popped);
+        } else System.out.println("*pop " + popped);
 
         return popped;
     }
@@ -209,7 +221,7 @@ public class MinHeap {
     }
 
     private boolean deadSpaceFull() {
-        return deadSpace == maxSize;
+        return deadSpace >= maxSize;
     }
 
     /**

@@ -18,6 +18,7 @@ public class Main {
         minHeap.insertDead(13);
         minHeap.insertDead(14);
         minHeap.insertDead(15);
+        minHeap.insertDead(15);
 
         minHeap.print();
         minHeap.pop();
@@ -27,7 +28,6 @@ public class Main {
 
         minHeap.insertDead(16);
         minHeap.insertDead(17);
-
         minHeap.print();
 
         minHeap.pop();
@@ -45,8 +45,18 @@ public class Main {
         minHeap.pop();
         minHeap.pop();
         minHeap.pop();
-
         minHeap.print();
+
+        minHeap.insertDead(18);
+        minHeap.insertDead(19);
+        minHeap.insertDead(20);
+        minHeap.insertDead(21);
+        minHeap.insertDead(22);
+        minHeap.insertDead(23);
+        minHeap.insertDead(24);
+        minHeap.insertDead(25);
+        minHeap.print();
+
 
     }
 }
