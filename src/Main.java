@@ -18,17 +18,17 @@ public class Main {
         minHeap.insertDead(13);
         minHeap.insertDead(14);
         minHeap.insertDead(15);
-        minHeap.insertDead(15);
+        minHeap.insertDead(16); // err
+        minHeap.print(); // 9 last pos, 6 dead space, empty 0
 
-        minHeap.print();
         minHeap.pop();
-        minHeap.print();
+        minHeap.print(); // 8 last pos, 6 dead space, empty 1 [9]
         minHeap.pop();
-        minHeap.print();
+        minHeap.print(); // 7 last pos, 6 dead space, empty 2 [9]
 
         minHeap.insertDead(16);
         minHeap.insertDead(17);
-        minHeap.print();
+        minHeap.print(); // 7 last pos, 8 dead space, empty 0
 
         minHeap.pop();
         minHeap.pop();
@@ -37,15 +37,8 @@ public class Main {
         minHeap.pop();
         minHeap.pop();
         minHeap.pop();
-        minHeap.pop();
-        minHeap.pop();
-        minHeap.pop();
-        minHeap.pop();
-        minHeap.pop();
-        minHeap.pop();
-        minHeap.pop();
-        minHeap.pop();
-        minHeap.print();
+        minHeap.pop(); // err
+        minHeap.print(); // 0 last pos, 8 dead space, empty 7 [1]
 
         minHeap.insertDead(18);
         minHeap.insertDead(19);
@@ -53,10 +46,9 @@ public class Main {
         minHeap.insertDead(21);
         minHeap.insertDead(22);
         minHeap.insertDead(23);
-        minHeap.insertDead(24);
-        minHeap.insertDead(25);
-        minHeap.print();
+        minHeap.insertDead(25); // run finished, all dead space converted to usable space, heap still full
+        minHeap.insertDead(24); // err
 
-
+        minHeap.print(); // last pos 15, dead space 0, empty 0
     }
 }

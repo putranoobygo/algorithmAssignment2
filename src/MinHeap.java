@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.IllegalFormatCodePointException;
 
 public class MinHeap {
 
@@ -53,21 +54,15 @@ public class MinHeap {
 //                    + " RIGHT CHILD :" + right);
 //            System.out.println();
 //        }
-        System.out.println(Arrays.toString(heap));
-        System.out.println("Dead space: " + deadSpace);
-        System.out.println("Last position: " + lastPos);
-        switch (maxSize - (lastPos + deadSpace)){
-            case 0:
-                System.out.println("Empty: 0");
-                break;
-            default:
-                System.out.println("Empty: " + (maxSize - (lastPos + deadSpace)) + " from [" + (lastPos + 1) + "]");
-                break;
-        }
+        System.out.println(",_________________________print heap________________________________________________________");
+        System.out.println("|" +Arrays.toString(heap));
+        System.out.print("|\t\tLast position " + lastPos);
+        System.out.print(", Dead space " + deadSpace);
         if (!spaceAvailable()) {
-            System.out.println("heap is full");
-        }
-        System.out.println();
+            System.out.println(", Empty 0");
+        } else
+            System.out.println(", Empty " + (maxSize - (lastPos + deadSpace)) + " from [" + (lastPos + 1) + "]");
+        System.out.println("'-------------------------------------------------------------------------------------------");
     }
 
     /**
@@ -120,12 +115,12 @@ public class MinHeap {
      *
      * @param element the element to be inserted
      */
-    public void insert(int element) {
+    public void insert(int element){
         if (spaceAvailable()) {
             heap[++lastPos] = element;
-            System.out.println("insert = " + element);
+            System.out.println("\tinsert " + element);
         } else {
-            System.out.println("- error inserting element " + element + ", heap full");
+            System.out.println("- Error inserting element " + element + ", heap full");
         }
         int current = lastPos;
         while (heap[current] < heap[parent(current)]) {
@@ -138,9 +133,9 @@ public class MinHeap {
         if (spaceAvailable()) {
             heap[maxSize - deadSpace] = element;
             deadSpace++;
-            System.out.println("dead insert = " + element);
+            System.out.println("\tdead insert " + element);
         } else {
-            System.out.println("- error inserting dead element " + element + ", heap full");
+            System.out.println("- Error inserting dead element " + element + ", heap full");
         }
         testAndFixDeadSpace();
     }
@@ -152,7 +147,7 @@ public class MinHeap {
             deadSpace = 0;
             lastPos = maxSize;
             percolateUp();
-            System.out.println("**end of run");
+            System.out.println("\t**end of run");
         }
     }
 
@@ -186,7 +181,7 @@ public class MinHeap {
      *
      * @return top element
      */
-    public int pop() {
+    public int pop(){
 
         testAndFixDeadSpace ();
 
@@ -196,8 +191,10 @@ public class MinHeap {
             heap[FRONT] = heap[lastPos--];
             percolateUp(FRONT);
             runLength++;
-            System.out.println("pop = " + popped);
-        } else System.out.println("*pop " + popped);
+            System.out.println("\tpop " + popped);
+        } else {
+            System.out.println("- Error using pop, no available elements in heap");
+        }
 
         return popped;
     }
