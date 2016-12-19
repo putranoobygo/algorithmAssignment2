@@ -48,7 +48,7 @@ public class Main {
         minHeap.insertDead(23);
         minHeap.insertDead(25); // run finished, all dead space converted to usable space, heap still full
         minHeap.insertDead(24); // err
-
+        minHeap.insert(2); // err
         minHeap.print(); // last pos 15, dead space 0, empty 0
     }
 }
