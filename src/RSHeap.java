@@ -10,22 +10,12 @@ public class RSHeap {
     final private int heapSize;
     final private MinHeap heap;
     private int[] values;
-    private PrintWriter writer = new PrintWriter(new File("output.txt"));
 
-    public RSHeap(int[] values, int heapSize) throws FileNotFoundException {
+    public RSHeap(int[] values, int heapSize){
         this.values = values;
         this.heapSize = heapSize;
         heap = new MinHeap(heapSize);
-        sort(values);
-    }
-
-    public RSHeap(int heapSize) throws FileNotFoundException {
-        this.heapSize = heapSize;
-        heap = new MinHeap(heapSize);
-    }
-
-    public void sort(int[] values){
-
+        heap.process(values);
     }
 
 }

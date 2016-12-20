@@ -1,6 +1,18 @@
+import java.util.Random;
+
 public class Main {
     public static void main(String[] args) {
 
+        final int amountOfValues = 15;
+        final int heapSize = 5;
+        RSHeap heap = new RSHeap(new Main().generateValues(amountOfValues), heapSize);
+    }
+
+    public Main() {
+
+    }
+
+    private void testHeap() {
         MinHeap minHeap = new MinHeap(15);
 
         minHeap.insert(0);
@@ -50,5 +62,22 @@ public class Main {
         minHeap.insertDead(24); // err
         minHeap.insert(2); // err
         minHeap.print(); // last pos 15, dead space 0, empty 0
+
+        minHeap.printTrees();
+    }
+
+    public int[] generateValues(int n) {
+
+        int[] permutations = new int[n];
+        int swapPosition;
+        long counter = 0;
+        for (int i = 0; i < n; i++) {
+            counter++;
+            swapPosition = (int)(Math.random() * (i + 1)); //0-i
+            permutations[i] = permutations[swapPosition]; //replace [i] with the temp value
+            permutations[swapPosition] = i; //replace the [swapPosition] with i
+        }
+
+        return permutations;
     }
 }

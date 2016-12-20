@@ -8,10 +8,11 @@ public class MinHeap {
     private int lastPos;
     private int maxSize;
     private int deadSpace;
+    private int runLength;
+
     private ArrayList<Integer> runLengths;
 
     private static final int FRONT = 1;
-    private int runLength;
 
     /**
      * Constructor initializes heap with maxSize, sets lastPos to
@@ -25,7 +26,7 @@ public class MinHeap {
         runLength = 0;
         runLengths = new ArrayList<>();
         heap = new int[this.maxSize + 1];
-        heap[0] = Integer.MIN_VALUE;
+        heap[0] = -999;
     }
 
     private int parent(int pos) {
@@ -44,25 +45,25 @@ public class MinHeap {
      * Prints the parents and children
      */
     public void print() {
-//        for (int i = 1; i <= lastPos / 2; i++) {
-//
-//            int parent = heap[i];
-//            int left = heap[2 * i];
-//            int right = heap[2 * i + 1];
-//
-//            System.out.print(" PARENT : " + parent + " LEFT CHILD : " + left
-//                    + " RIGHT CHILD :" + right);
-//            System.out.println();
-//        }
-        System.out.println(",_________________________print heap________________________________________________________");
-        System.out.println("|" +Arrays.toString(heap));
-        System.out.print("|\t\tLast position " + lastPos);
-        System.out.print(", Dead space " + deadSpace);
+
+        System.out.print("\t\t" + Arrays.toString(heap));
+        System.out.print("\t" + lastPos + " Last Pos");
+        System.out.print(", " + deadSpace + " Dead space");
         if (!spaceAvailable()) {
-            System.out.println(", Empty 0");
+            System.out.println(", 0 Empty");
         } else
-            System.out.println(", Empty " + (maxSize - (lastPos + deadSpace)) + " from [" + (lastPos + 1) + "]");
-        System.out.println("'-------------------------------------------------------------------------------------------");
+            System.out.println(", " + (maxSize - (lastPos + deadSpace)) + " Empty from [" + (lastPos + 1) + "]");
+    }
+
+    public void printTrees() {
+        for (int i = 1; i <= lastPos / 2; i++) {
+            int parent = heap[i];
+            int left = heap[2 * i];
+            int right = heap[2 * i + 1];
+            System.out.print(" PARENT : " + parent + " LEFT CHILD : " + left
+                    + " RIGHT CHILD :" + right);
+            System.out.println();
+        }
     }
 
     /**
@@ -98,14 +99,18 @@ public class MinHeap {
      */
     private void percolateUp(int pos) {
         if (!isLeaf(pos)) {
-            if (heap[pos] > heap[leftChild(pos)] || heap[pos] > heap[rightChild(pos)]) {
-                if (heap[leftChild(pos)] < heap[rightChild(pos)]) {
-                    swap(pos, leftChild(pos));
-                    percolateUp(leftChild(pos));
-                } else {
-                    swap(pos, rightChild(pos));
-                    percolateUp(rightChild(pos));
+            try {
+                if (heap[pos] > heap[leftChild(pos)] || heap[pos] > heap[rightChild(pos)]) {
+                    if (heap[leftChild(pos)] < heap[rightChild(pos)]) {
+                        swap(pos, leftChild(pos));
+                        percolateUp(leftChild(pos));
+                    } else {
+                        swap(pos, rightChild(pos));
+                        percolateUp(rightChild(pos));
+                    }
                 }
+            } catch (ArrayIndexOutOfBoundsException ioe) {
+                System.out.println("FUCK THIS SHIT");
             }
         }
     }
@@ -115,7 +120,7 @@ public class MinHeap {
      *
      * @param element the element to be inserted
      */
-    public void insert(int element){
+    public void insert(int element) {
         if (spaceAvailable()) {
             heap[++lastPos] = element;
             System.out.println("\tinsert " + element);
@@ -127,6 +132,7 @@ public class MinHeap {
             swap(current, parent(current));
             current = parent(current);
         }
+        percolateUp();
     }
 
     public void insertDead(int element) {
@@ -171,9 +177,10 @@ public class MinHeap {
      * Sorts the whole heap
      */
     public void percolateUp() {
-        for (int pos = (lastPos / 2); pos >= 1; pos--) {
-            percolateUp(pos);
-        }
+        if (lastPos > 1)
+            for (int pos = (lastPos / 2); pos >= 1; pos--) {
+                percolateUp(pos);
+            }
     }
 
     /**
@@ -181,13 +188,13 @@ public class MinHeap {
      *
      * @return top element
      */
-    public int pop(){
+    public int pop() {
 
-        testAndFixDeadSpace ();
+        testAndFixDeadSpace();
 
         int popped = heap[FRONT];
 
-        if ((lastPos -1) >= 0) {
+        if ((lastPos - 1) >= 0) {
             heap[FRONT] = heap[lastPos--];
             percolateUp(FRONT);
             runLength++;
@@ -218,7 +225,17 @@ public class MinHeap {
     }
 
     private boolean deadSpaceFull() {
-        return deadSpace >= maxSize;
+        return deadSpace == maxSize;
+    }
+
+    private void forceResetDead() {
+        if (lastPos == 0)
+            if (deadSpace > 0) {
+                System.out.println("Force reset successful");
+                for (int i = 0; i <= deadSpace; i++) {
+                    heap[i] = heap[maxSize - (deadSpace + i)];
+                }
+            }
     }
 
     /**
@@ -245,4 +262,47 @@ public class MinHeap {
         return list.length / runCount; // providing list.length and runLengths are > 0
     }
 
+    public void process(int[] input) {
+
+        System.out.println(Arrays.toString(input) + " input");
+
+        int inputPos = 0;
+        int outputPos = 0;
+
+        int lastOutput = 0;
+
+        int[] output = new int[input.length];
+
+        for (int i = 0; i < input.length; i++) {
+            System.out.println("i = " + i);
+            print();
+            if (spaceAvailable() && i < input.length) {
+                if (input[i] >= lastOutput) {
+                    insert(input[i]);
+                } else {
+                    if (!deadSpaceFull()) {
+                        insertDead(input[i]);
+                    }
+                }
+            } else {
+                i--;
+                lastOutput = getTop();
+                output[outputPos++] = pop();
+                System.out.println(Arrays.toString(output) + " output");
+            }
+            if (i == input.length-1){
+                forceResetDead();
+                i -= lastPos;
+//                print();
+//                System.out.println("pop remainder");
+//                for (int i = 0; i < lastPos; ) {
+//                    output[outputPos++] = pop();
+//                    System.out.println(Arrays.toString(output) + " output");
+//                    print();
+//                    System.out.println(i + "," + lastPos);
+//                }
+            }
+        }
+
+    }
 }
