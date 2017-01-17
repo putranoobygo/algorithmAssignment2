@@ -16,7 +16,7 @@ public class RSHeap {
     private static final int FRONT = 1;
 
     /**
-     * Constructor initializes heap with maxSize, sets heapSize to
+     * Constructor initializes heap
      *
      * @param maxSize maximum maxSize of the heap
      */
@@ -32,8 +32,9 @@ public class RSHeap {
     }
 
     /**
-     * @param pos
-     * @return
+     * returns parent of a node
+     * @param pos position at which the parent should be found
+     * @return the parent element of the position specified
      */
     private int parent(int pos) {
         return pos / 2;
@@ -43,8 +44,6 @@ public class RSHeap {
      * Prints the parents and children
      */
     private void print() {
-        //heap, heapSize, deadspace, empty [from], outputPos
-//        System.out.println("\t\t"+Arrays.toString(Arrays.copyOfRange(heap,1,maxSize+1)));
         System.out.println("\t\t" + toString(Arrays.copyOfRange(heap, 1, maxSize + 1)));
         System.out.println(">>\t" + Arrays.toString(Arrays.copyOfRange(output, 0, outputPos)));
         System.out.println("-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-");
@@ -84,7 +83,8 @@ public class RSHeap {
     }
 
     /**
-     * @param element
+     * inserts an element into the dead space of the array
+     * @param element that will be inserted
      */
     private void insertDead(int element) {
         if (intSpaceAvailable() > 0) {
@@ -97,7 +97,7 @@ public class RSHeap {
     }
 
     /**
-     *
+     * Percolate up method compares parent element and swaps if necessary
      */
     private void bubbleUp() {
         int pos = heapSize - 1;
@@ -275,7 +275,6 @@ public class RSHeap {
                 int i = 0;
 
                 while (true) {
-                    //here is where the numbers should be formatted
                     if (i >= heapSize) {
                         if (i < array.length - deadSpace) {
                             output.append('-');
@@ -287,7 +286,6 @@ public class RSHeap {
                     } else {
                         output.append(array[i]);
                     }
-                    //
                     if (i == var1) {
                         return output.append('}').toString();
                     }
